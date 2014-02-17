@@ -2,10 +2,13 @@ package controllers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
+
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
+import play.Logger.info
 import play.api.Play.current
+import play.api.libs.Jsonp
 import play.api.libs.concurrent.Akka
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.Iteratee
@@ -15,12 +18,10 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.mvc.WebSocket
-import play.api.libs.iteratee.Concurrent
-import play.api.libs.Jsonp
 
 object Application extends Controller {
 
-  implicit val timeout = Timeout(1000)
+  implicit val timeout = Timeout(5000)
   val teacherRoom = Akka.system(current).actorOf(Props[TeacherRoom], "teacher-room")
 
   def index = Action {
