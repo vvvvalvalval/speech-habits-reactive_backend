@@ -49,35 +49,35 @@ object Application extends Controller {
     ws
   }
 
-  def expressions(callback: String) = {
-
-	import play.Logger._
-	
-	info("Sending the expressions data...")
-    
-    import scala.concurrent.ExecutionContext.Implicits.global
-
-    val futureCounters =
-      (teacherRoom ? GiveCountersSnapshot)
-        .mapTo[Map[Expression, Int]]
-
-    val futureAction = futureCounters.collect {
-      case expressionsCounters: Map[Expression, Int] => {
-
-        val result: JsValue = Json.toJson(expressionsCounters.map(expressionToJson(_)))
-
-        debug("Sent the expressions data.")
-        Ok(Jsonp(callback,result)) //TODO return appropriate response
-      }
-    }
-
-    Action.async(futureAction)
-  }
-
-  def expressionToJson(expressionCount: (Expression, Int)): JsValue = expressionCount match {
-    case (expression, count) => Json.obj(
-      "id" -> expression.id,
-      "text" -> expression.text,
-      "count" -> count)
-  }
+//  def expressions(callback: String) = {
+//
+//	import play.Logger._
+//	
+//	info("Sending the expressions data...")
+//    
+//    import scala.concurrent.ExecutionContext.Implicits.global
+//
+//    val futureCounters =
+//      (teacherRoom ? GiveCountersSnapshot)
+//        .mapTo[Map[Expression, Int]]
+//
+//    val futureAction = futureCounters.collect {
+//      case expressionsCounters: Map[Expression, Int] => {
+//
+//        val result: JsValue = Json.toJson(expressionsCounters.map(expressionToJson(_)))
+//
+//        debug("Sent the expressions data.")
+//        Ok(Jsonp(callback,result)) //TODO return appropriate response
+//      }
+//    }
+//
+//    Action.async(futureAction)
+//  }
+//
+//  def expressionToJson(expressionCount: (Expression, Int)): JsValue = expressionCount match {
+//    case (expression, count) => Json.obj(
+//      "id" -> expression.id,
+//      "text" -> expression.text,
+//      "count" -> count)
+//  }
 }
