@@ -25,7 +25,7 @@ import models.Student
 object Application extends Controller {
 
   implicit val timeout = Timeout(5000)
-  val teacherRoom = Akka.system(current).actorOf(Props[TeacherRoom], "teacher-room")
+  val roomsActor = Akka.system(current).actorOf(Props[RoomsActor], "rooms")
   val studentsActor = Akka.system(current).actorOf(Props[StudentsActor], "students")
   
   def index = Action {

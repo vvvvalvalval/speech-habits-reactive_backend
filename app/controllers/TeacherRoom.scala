@@ -22,22 +22,31 @@ import play.api.libs.concurrent.Promise
 import java.util.concurrent.TimeUnit
 import models.StudentTerminal
 import models.StudentTerminal
+import models.ExpressionId
+import models.Teacher
+import models.Expression
+import models.Expression
 
 /**
  * The Actor managing the room.
  */
-class TeacherRoom extends Actor with SpeechHabitsLogged {
+class TeacherRoom(val teacher: Teacher, 
+		initialExpressions: scala.collection.immutable.Set[Expression] = scala.collection.immutable.Set()) 
+		extends Actor with SpeechHabitsLogged {
 
-  val expressionsCounters: Map[Expression, Int] = Map(
-    Expression(0, "By the way") -> 9,
-    Expression(1, "Somewhere, somehow") -> 5,
-    Expression(3, "You notice that") -> 3)
+  val expressionsCounters: Map[Expression, Int] = {
+    val m = Map[Expression, Int]()
+    for(expression <- initialExpressions){
+      m(expression) = 0
+    }
+    m
+  }
 
   def countersSnapshot: scala.collection.immutable.Map[Expression, Int] = expressionsCounters.toMap
 
-  def findExpressionById(expressionId: Long): Expression = {
+  def findExpressionById(expressionId: ExpressionId): Expression = {
     expressionsCounters.keySet
-      .find(_.id == expressionId)
+      .find(_.id == expressionId.id)
       .getOrElse({ throw new NoSuchElementException("Nonexistent Expression ID : " + expressionId) })
   }
 
@@ -149,7 +158,7 @@ class TeacherRoom extends Actor with SpeechHabitsLogged {
       }
   }
 
-  def studentsActor = this.context.actorSelection("../students")
+  def studentsActor = this.context.actorSelection("../../students")
 
   def sendToTerminal(message: Any)(terminal: StudentTerminal) {
     studentsActor ! MessageToTerminal(terminal, message)
